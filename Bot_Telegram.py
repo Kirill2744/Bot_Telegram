@@ -33,8 +33,8 @@ WEATHER_STATES = {
 # Состояния для ConversationHandler
 CITY, DAYS = range(2)
 
+# Отправляет приветственное сообщение при команде /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет приветственное сообщение при команде /start"""
     user = update.effective_user
     await update.message.reply_text(
         f"Привет, {user.first_name}! Я бот погоды.\n"
@@ -42,6 +42,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "Или используй команду /forecast для выбора количества дней."
     )
 
+# 
 async def get_weather(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Получает текущую погоду для города"""
     city = update.message.text
@@ -52,6 +53,7 @@ async def get_weather(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     else:
         await update.message.reply_text("Не удалось получить данные о погоде. Проверьте название города.")
 
+#
 async def forecast(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Начинает процесс получения прогноза погоды на несколько дней"""
     await update.message.reply_text(
@@ -60,6 +62,7 @@ async def forecast(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     )
     return CITY
 
+#
 async def received_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Получает город от пользователя и запрашивает количество дней"""
     context.user_data['city'] = update.message.text
@@ -71,8 +74,8 @@ async def received_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     )
     return DAYS
 
+# Получает количество дней и отправляет прогноз
 async def received_days(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Получает количество дней и отправляет прогноз"""
     city = context.user_data['city']
     days = int(update.message.text)
     
@@ -90,16 +93,16 @@ async def received_days(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     
     return ConversationHandler.END
 
+# Отменяет диалог
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Отменяет диалог"""
     await update.message.reply_text(
         "Отменено.",
         reply_markup=ReplyKeyboardRemove()
     )
     return ConversationHandler.END
 
+# Получает текущую погоду с OpenWeatherMap API
 def fetch_weather(city: str) -> dict:
-    """Получает текущую погоду с OpenWeatherMap API"""
     try:
         url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={OWM_API_KEY}&units=metric&lang=ru"
         response = requests.get(url)
@@ -108,8 +111,8 @@ def fetch_weather(city: str) -> dict:
     except:
         return None
 
+# Получает прогноз погоды с OpenWeatherMap API
 def fetch_weather_forecast(city: str, days: int) -> dict:
-    """Получает прогноз погоды с OpenWeatherMap API"""
     try:
         url = f"http://api.openweathermap.org/data/2.5/forecast?q={city}&appid={OWM_API_KEY}&units=metric&lang=ru&cnt={days*8}"
         response = requests.get(url)
@@ -118,8 +121,8 @@ def fetch_weather_forecast(city: str, days: int) -> dict:
     except:
         return None
 
+# Форматирует данные о текущей погоде в читаемый текст
 def format_current_weather(data: dict) -> str:
-    """Форматирует данные о текущей погоде в читаемый текст"""
     city = data['name']
     country = data['sys']['country']
     temp = data['main']['temp']
@@ -137,14 +140,14 @@ def format_current_weather(data: dict) -> str:
         f"\n<i>Обновлено: {data['dt']}</i>"
     )
 
+# Форматирует прогноз погоды в список сообщений
 def format_forecast(data: dict, days: int) -> list:
-    """Форматирует прогноз погоды в список сообщений"""
     city = data['city']['name']
     country = data['city']['country']
     forecasts = []
     
+# Берем прогноз на середину дня (обычно 12:00)
     for i in range(days):
-        # Берем прогноз на середину дня (обычно 12:00)
         day_data = data['list'][i*8 + 4] if len(data['list']) > i*8 + 4 else data['list'][-1]
         date = day_data['dt_txt'].split()[0]
         temp = day_data['main']['temp']
@@ -164,7 +167,6 @@ def format_forecast(data: dict, days: int) -> list:
     return forecasts
 
 def main() -> None:
-    """Запуск бота"""
     # Создаем Application
     application = Application.builder().token(TOKEN).build()
 
