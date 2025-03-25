@@ -42,9 +42,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "Или используй команду /forecast для выбора количества дней."
     )
 
-# 
+# Получает текущую погоду для города
 async def get_weather(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Получает текущую погоду для города"""
     city = update.message.text
     weather_data = fetch_weather(city)
     
@@ -53,18 +52,16 @@ async def get_weather(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     else:
         await update.message.reply_text("Не удалось получить данные о погоде. Проверьте название города.")
 
-#
+# Начинает процесс получения прогноза погоды на несколько дней
 async def forecast(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Начинает процесс получения прогноза погоды на несколько дней"""
     await update.message.reply_text(
         "Введите название города:",
         reply_markup=ReplyKeyboardRemove()
     )
     return CITY
 
-#
+# Получает город от пользователя и запрашивает количество дней
 async def received_city(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Получает город от пользователя и запрашивает количество дней"""
     context.user_data['city'] = update.message.text
     
     reply_keyboard = [['1', '3', '5']]
