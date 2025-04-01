@@ -10,7 +10,7 @@ from telegram.ext import (
 )
 
 # Конфигурация
-TOKEN = "7717960112:AAFRsM0j2lEkJaUL7XSmsBk6ik7UXb0qB8Q"
+TOKEN = "ТОКЕН БОТ"
 OWM_API_KEY = "28caefc76d9af8c1c35079990b58b435"
 WEATHER_STATES = {
     'Thunderstorm': '⛈ Гроза',
